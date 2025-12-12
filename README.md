@@ -5,6 +5,8 @@ torabo-tsuki LP用は[こちら](https://github.com/sekigon-gonnoc/zmk-keyboard-
 
 通信頻度が上がった分、操作中も待機中も本来のファームウェアより消費電力が2倍になっています
 
+通信頻度やプロトコルスタックの変更によりQMK版より接続が安定します。
+
 * _centralがついているuf2をトラックボールがついている方に、_peripheralを反対側に書き込んでください
 * キーマップはkeymap-editorおよびzmk-studioで編集できます
 * ブートローダを起動するにはキーマップに&bootloaderを割り当てておくか、シリアルポートを1200bpsで開いてから閉じてください
