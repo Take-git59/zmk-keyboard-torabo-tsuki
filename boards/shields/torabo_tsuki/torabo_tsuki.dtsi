@@ -1,11 +1,6 @@
 #include <dt-bindings/zmk/matrix_transform.h>
 
-/* ★dtsi側のパースエラー（expected number...）を強制解決するため、標準ヘッダーを先んじて読み込ませます */
-#include <dt-bindings/zmk/outputs.h>
-#include <dt-bindings/zmk/keys.h>
-#include <dt-bindings/zmk/bt.h>
-#include <dt-bindings/zmk/rgb.h>
-
+/* マクロの衝突を防ぐため、layouts.dtsi を先に読み込ませて RC(row, col) を優先確定させます */
 #include "torabo_tsuki_layouts.dtsi"
 
 / {
