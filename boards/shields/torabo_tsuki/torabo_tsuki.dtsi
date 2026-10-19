@@ -156,9 +156,34 @@
 
         /*   optional features   */
         power-gpios = <&bmp 14 GPIO_ACTIVE_HIGH>;
-         snipe-layers = <5>;
-         scroll-layers = <3 4>;
-         automouse-layer = <2>;
+         //snipe-layers = <5>;
+         //scroll-layers = <3 4>;
+         //automouse-layer = <2>;
 
+        /* トラックボール自体の速度設定 */
+        cpi = <400>; 
+
+        /* ★1. ドライバー標準のオートマウスレイヤー設定に戻します */
+        automouse-layer = <2>;
+
+        /* ★2. インプットプロセッサをZMK標準＋ドライバーの組み合わせに書き換え */
+        input-processors = 
+            /* A. スナイプ（感度低下）レイヤーの設定 */
+            <&zip_sn_msc 5 0>, 
+            
+            /* B. スクロールレイヤーの設定（スクロール量を半分にする設定を維持） */
+            <&zip_sn_msc 0 3> {
+                scroller-scalars = <0x80 0x80>; 
+            }, 
+            <&zip_sn_msc 0 4> {
+                scroller-scalars = <0x80 0x80>;
+            },
+
+            /* C. ★微小な動き（ノイズや手の震え）をカットするデッドゾーン（閾値）設定 */
+            /* ZMK標準の xy_scaler を使い、数ドット以下の細かい移動を「0」として切り捨てます */
+            <&zip_xy_scaler 1 1> {
+                // ここで「これ以下の移動は無視する」という最小値を指定します
+                // 1 や 2 などの小さな値を指定して調整します（以下は例として2未満をカット）
+                min-low-val = <2>;
     };
 };
