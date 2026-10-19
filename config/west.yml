@@ -4,8 +4,6 @@ manifest:
       url-base: https://github.com/zmkfirmware
     - name: sekigon-gonnoc
       url-base: https://github.com/sekigon-gonnoc
-    - name: yamaryu211
-      url-base: https://github.com/yamaryu211
   projects:
     - name: zmk
       remote: zmkfirmware
@@ -28,8 +26,5 @@ manifest:
     - name: zmk-pmw3610-driver
       remote: sekigon-gonnoc
       revision: torabo-tsuki
-    - name: zmk-input-processor-temp-layer-threshold
-      remote: yamaryu211
-      revision: main
   self:
     path: config
