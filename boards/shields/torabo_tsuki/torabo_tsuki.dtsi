@@ -89,6 +89,15 @@
         device = <&trackball>;
     };
 
+    /* ★ここに新しくデッドゾーン用のプロセッサを定義します */
+    my_scaler: my_scaler_node {
+        compatible = "zmk,input-processor-scaler";
+        #input-processor-cells = <2>; // 1 1 の引数を受け取るための設定
+        // ここで「これ以下の移動は無視する」という最小値を指定
+        // 2未満の細かい移動を0として切り捨てます。誤作動が多い場合は3や4に増やします。
+        min-low-val = <2>; 
+    };
+
     vbatt: vbatt {
         // Disable default battery monitoring
         status = "disabled";
@@ -179,11 +188,8 @@
                 scroller-scalars = <0x80 0x80>;
             },
 
-            /* C. ★微小な動き（ノイズや手の震え）をカットするデッドゾーン（閾値）設定 */
-            /* ZMK標準の xy_scaler を使い、数ドット以下の細かい移動を「0」として切り捨てます */
-            <&zip_xy_scaler 1 1> {
-                // ここで「これ以下の移動は無視する」という最小値を指定します
-                // 1 や 2 などの小さな値を指定して調整します（以下は例として2未満をカット）
-                min-low-val = <2>;
+            /* C. ★先ほど上で定義した my_scaler をここで呼び出します */
+            /* 引数 <1 1> は、x軸とy軸の移動量をそれぞれ1倍（そのまま）にするという意味です */
+            <&my_scaler 1 1>;
     };
 };
