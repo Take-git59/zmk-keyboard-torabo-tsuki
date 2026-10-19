@@ -1,6 +1,9 @@
 #include <dt-bindings/zmk/matrix_transform.h>
 #include "torabo_tsuki_layouts.dtsi"
 
+// オートマウスで切り替えたいレイヤー番号を定義 レイヤー2
+#define AML_LAYER 2
+
 / {
     chosen {
         zmk,physical-layout = &physical_layout_l;
@@ -89,6 +92,15 @@
         device = <&trackball>;
     };
 
+    // ★ここに閾値付きオートマウスレイヤーのプロセッサ定義を追加
+    ib_aml: input_processor_aml {
+        compatible = "zmk,input-processor-temp-layer-threshold";
+        #input-processor-cells = <0>;
+        layer = <AML_LAYER>;
+        threshold = <10>;       // ★調整用：何ドット動いたらレイヤーONにするか
+        delay = <400>;         // ★調整用：ボールが止まってから何ミリ秒レイヤーを維持するか
+    };
+
     vbatt: vbatt {
         // Disable default battery monitoring
         status = "disabled";
@@ -158,6 +170,22 @@
         power-gpios = <&bmp 14 GPIO_ACTIVE_HIGH>;
         // snipe-layers = <1>;
         // scroll-layers = <2 3>;
-        automouse-layer = <1>;
+        // automouse-layer = <1>;
+
+        /* 2. 代わりに、ZMK標準のプロセッサ記述を使って配列として並べます */
+        input-processors = 
+            /* スナイプ（感度低下）レイヤーの設定 */
+            <&zip_sn_msc 5 0>, 
+            
+            /* スクロールレイヤーの設定（レイヤー3と4を指定） */
+            <&zip_sn_msc 0 3> {
+                scroller-scalars = <0x80 0x80>; // 0x100(1倍)の半分で0.5倍になります
+            }, 
+            <&zip_sn_msc 0 4> {
+                scroller-scalars = <0x100 0x100>;
+            }, 
+            
+            /* ★閾値付きオートマウスレイヤーの設定（一番最後に置く） */
+            <&ib_aml>;
     };
 };
