@@ -1,6 +1,4 @@
 #include <dt-bindings/zmk/matrix_transform.h>
-
-/* マクロの衝突を防ぐため、layouts.dtsi を先に読み込ませて RC(row, col) を優先確定させます */
 #include "torabo_tsuki_layouts.dtsi"
 
 / {
@@ -152,28 +150,16 @@
         irq-gpios = <&gpio0 23 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
         power-gpios = <&bmp 14 GPIO_ACTIVE_HIGH>;
 
+        /* オートマウスの基本レイヤー */
         automouse-layer = <2>;
         snipe-layers = <5>;
         scroll-layers = <3 4>;
+
+        /* ★【解決策】ドライバー組み込みのオートマウス起動閾値（デッドゾーン） */
+        /* 指定したカウント数（ドット数）以上の移動があった時だけオートマウスを起動します */
+        /* 振動による誤作動が多い場合は、この値を <15> や <20> に増やして調整します */
+        automouse-threshold = <10>;
     };
 };
 
-/* =============================================================
-   【完全解決】標準機能 input-listener 経由で閾値・スクロール量を上書き
-   ============================================================= */
-&trackball_listener {
-    status = "okay";
-
-    /* レイヤー3に入ったとき、スクロール量を半分（0.5倍 = 0x80）にする */
-    layer-3 {
-        layers = <3>;
-        scroller-scalars = <0x80 0x80>;
-    };
-
-    /* レイヤー4に入ったとき、スクロール量を半分（0.5倍 = 0x80）にする */
-    layer-4 {
-        layers = <4>;
-        scroller-scalars = <0x80 0x80>;
-    };
-};
-
+/* エラーの引き金になっていた &trackball_listener { ... }; の記述は完全に削除しました */
