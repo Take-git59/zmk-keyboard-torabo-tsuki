@@ -164,22 +164,22 @@
 &trackball_listener {
     status = "okay";
 
-    /* ★デフォルト状態（全レイヤー共通のベース）にデッドゾーン閾値を適用します */
+    /* ★デフォルトレイヤー（通常時、レイヤー0番）にデッドゾーンを適用 */
     default_layer {
-        /* xy-scalars と min-low-val をここに配置することでパースエラーを完全に防ぎます */
+        layers = <0>; // ★ZMK新仕様で必須となったプロパティ（対象レイヤー番号）
         xy-scalars = <1 1>;
-        min-low-val = <2>; /* 2未満（1以下）の微小な移動量をすべてカットして誤作動を防止 */
+        min-low-val = <2>; /* 2未満（1以下）の微小な移動量をすべてカットして誤作動防止 */
     };
 
     /* レイヤー3に入ったとき、スクロール量を半分（0.5倍 = 0x80）にする */
     layer-3 {
-        trackball-layers = <3>;
+        layers = <3>; // ★trackball-layers から現在の公式仕様である layers に統合修正
         scroller-scalars = <0x80 0x80>;
     };
 
     /* レイヤー4に入ったとき、スクロール量を半分（0.5倍 = 0x80）にする */
     layer-4 {
-        trackball-layers = <4>;
+        layers = <4>; // ★現在の公式仕様である layers に修正
         scroller-scalars = <0x80 0x80>;
     };
 };
