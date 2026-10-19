@@ -89,32 +89,6 @@
         device = <&trackball>;
     };
 
-    /* =============================================================
-       【完全版】すべてのインプットプロセッサを手動で明確に定義
-       ============================================================= */
-       
-    /* 1. スナイプレイヤー用（特定のレイヤーで感度を下げる）の設定 */
-    my_sniper: my_sniper_node {
-        compatible = "zmk,input-processor-scaler";
-        #input-processor-cells = <2>;  // 引数：<snipe_layer scroll_layer>
-        trackball-layers = <5>;         // レイヤー5をスナイプに指定
-    };
-
-    /* 2. スクロールレイヤー用（感度を半分にする）の設定 */
-    my_scroller: my_scroller_node {
-        compatible = "zmk,input-processor-scaler";
-        #input-processor-cells = <2>;  // 引数：<snipe_layer scroll_layer>
-        trackball-layers = <3 4>;       // レイヤー3と4をスクロールに指定
-        scroller-scalars = <0x80 0x80>; // 0x100(1倍)の半分で0.5倍にする
-    };
-
-    /* 3. デッドゾーン（微小な移動のカット＝誤作動防止）用の設定 */
-    my_scaler: my_scaler_node {
-        compatible = "zmk,input-processor-scaler";
-        #input-processor-cells = <2>;  // 引数：<x_scale y_scale>
-        min-low-val = <2>;            // 2未満（1以下）の移動量をすべてカットして誤作動を防ぐ
-    };
-
     vbatt: vbatt {
         // Disable default battery monitoring
         status = "disabled";
@@ -184,19 +158,35 @@
         /* トラックボール自体の速度設定 */
         cpi = <400>; 
 
-        /* ドライバー標準のオートマウスレイヤー設定 */
+        /* 1. 標準のオートマウスレイヤー設定をシンプルに有効化 */
         automouse-layer = <2>;
+        snipe-layers = <5>;
+        scroll-layers = <3 4>;
+    };
+};
 
-        /* インプットプロセッサに定義したカスタムノードを登録 */
-        input-processors = 
-            /* A. スナイプレイヤーの設定は既存のものをそのまま利用 */
-            <&zip_sn_msc 5 0>, 
-            
-            /* B. 先ほど上で定義したスクロール速度半分のノードを適用 */
-            <&my_scroller 0 3>,   /* レイヤー3でスクロール（速度0.5倍） */
-            <&my_scroller 0 4>,   /* レイヤー4でスクロール（速度0.5倍） */
-            
-            /* C. 先ほど上で定義したデッドゾーン用ノードを適用（移動量は1 1で等倍） */
-            <&my_scaler 1 1>;
+/* =============================================================
+   【最終解決】ファイル下部で安全にプロパティのみを上書きする
+   ============================================================= */
+
+/* 2. トラックボール全体の微小な動き（2未満）をカットして誤作動を防ぐ（デッドゾーン設定） */
+&trackball {
+    min-low-val = <2>; 
+};
+
+/* 3. スクロールレイヤー（3と4）でのスクロール量を半分（0.5倍）に設定 */
+&trackball_listener {
+    status = "okay";
+    
+    // レイヤー3に入ったとき、スクロール入力を半分（0x80）にする
+    layer-3 {
+        trackball-layers = <3>;
+        scroller-scalars = <0x80 0x80>;
+    };
+
+    // レイヤー4に入ったとき、スクロール入力を半分（0x80）にする
+    layer-4 {
+        trackball-layers = <4>;
+        scroller-scalars = <0x80 0x80>;
     };
 };
