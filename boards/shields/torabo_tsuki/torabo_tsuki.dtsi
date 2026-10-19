@@ -90,21 +90,29 @@
     };
 
     /* =============================================================
-       【新設】自分専用のカスタム・インプットプロセッサの定義
+       【完全版】すべてのインプットプロセッサを手動で明確に定義
        ============================================================= */
        
-    /* 1. デッドゾーン（微小な移動のカット）用の設定 */
-    my_scaler: my_scaler_node {
+    /* 1. スナイプレイヤー用（特定のレイヤーで感度を下げる）の設定 */
+    my_sniper: my_sniper_node {
         compatible = "zmk,input-processor-scaler";
-        #input-processor-cells = <2>; // 引数を2つ(1 1)受け取れるようにする
-        min-low-val = <2>;            // 2未満（1以下）の移動量をすべてカットして誤作動を防ぐ
+        #input-processor-cells = <2>;  // 引数：<snipe_layer scroll_layer>
+        trackball-layers = <5>;         // レイヤー5をスナイプに指定
     };
 
-    /* 2. スクロール量を半分（0.5倍）にするための設定 */
+    /* 2. スクロールレイヤー用（感度を半分にする）の設定 */
     my_scroller: my_scroller_node {
         compatible = "zmk,input-processor-scaler";
-        #input-processor-cells = <2>; // 引数を2つ(0 3 や 0 4)受け取れるようにする
+        #input-processor-cells = <2>;  // 引数：<snipe_layer scroll_layer>
+        trackball-layers = <3 4>;       // レイヤー3と4をスクロールに指定
         scroller-scalars = <0x80 0x80>; // 0x100(1倍)の半分で0.5倍にする
+    };
+
+    /* 3. デッドゾーン（微小な移動のカット＝誤作動防止）用の設定 */
+    my_scaler: my_scaler_node {
+        compatible = "zmk,input-processor-scaler";
+        #input-processor-cells = <2>;  // 引数：<x_scale y_scale>
+        min-low-val = <2>;            // 2未満（1以下）の移動量をすべてカットして誤作動を防ぐ
     };
 
     vbatt: vbatt {
